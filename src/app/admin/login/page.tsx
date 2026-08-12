@@ -1,1 +1,109 @@
-'use client';import {useRouter} from 'next/navigation';export default function Login(){const r=useRouter();function go(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const f=new FormData(e.currentTarget);if(f.get('email')==='demo@darmotors.local'&&f.get('password')==='demo1234'){sessionStorage.setItem('dar_demo_auth','1');r.push('/admin')}else alert('Use the demo credentials shown below.')}return <main className="shell section" style={{maxWidth:520}}><div className="label">D.A.R. Motors</div><h1>Admin login</h1><p>Demo credentials: <b>demo@darmotors.local</b> / <b>demo1234</b></p><form onSubmit={go} style={{display:'grid',gap:12}}><input className="input" name="email" type="email" placeholder="Email" required/><input className="input" name="password" type="password" placeholder="Password" required/><button className="btn">Log in</button></form><p style={{color:'#6b7280',fontSize:13}}>Demo authentication is browser-session only. Production must use Supabase Auth + RLS.</p></main>}
+'use client';
+
+function withBasePath(path: string) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  return `${basePath}${path}`;
+}
+
+export default function LoginPage() {
+  function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    const email = String(
+      formData.get('email') || ''
+    ).trim();
+
+    const password = String(
+      formData.get('password') || ''
+    );
+
+    if (
+      email === 'demo@darmotors.local' &&
+      password === 'demo1234'
+    ) {
+      window.sessionStorage.setItem(
+        'dar_demo_auth',
+        '1'
+      );
+
+      // Full navigation deliberately used here.
+      // This guarantees AdminShell mounts again
+      // and reads the new session state.
+      window.location.assign(
+        withBasePath('/admin/')
+      );
+
+      return;
+    }
+
+    alert('Incorrect demo credentials.');
+  }
+
+  return (
+    <main
+      className="shell section"
+      style={{ maxWidth: 520 }}
+    >
+      <div className="label">
+        D.A.R. Motors
+      </div>
+
+      <h1>Admin login</h1>
+
+      <p>
+        Demo credentials:
+        <br />
+        <strong>demo@darmotors.local</strong>
+        <br />
+        <strong>demo1234</strong>
+      </p>
+
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: 'grid',
+          gap: 12,
+        }}
+      >
+        <input
+          className="input"
+          name="email"
+          type="email"
+          placeholder="Email"
+          autoComplete="username"
+          required
+        />
+
+        <input
+          className="input"
+          name="password"
+          type="password"
+          placeholder="Password"
+          autoComplete="current-password"
+          required
+        />
+
+        <button
+          className="btn"
+          type="submit"
+        >
+          Log in
+        </button>
+      </form>
+
+      <p
+        style={{
+          color: '#6b7280',
+          fontSize: 13,
+        }}
+      >
+        Demo authentication is stored only
+        in this browser session.
+      </p>
+    </main>
+  );
+}
