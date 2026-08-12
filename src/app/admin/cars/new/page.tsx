@@ -1,1 +1,0 @@
-import VehicleForm from '@/components/VehicleForm';export default function New(){return <><div className="label">Inventory</div><h1>Add vehicle</h1><p>Designed for the same mental model as creating a marketplace listing.</p><VehicleForm/></>}

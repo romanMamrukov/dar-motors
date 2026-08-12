@@ -1,1 +1,0 @@
-export const t={brand:'D.A.R. Motors',tagline:'Auto Service & Selected Cars',viewCars:'View Cars',call:'Call',contact:'Contact',ask:'Ask about this car'} as const;
