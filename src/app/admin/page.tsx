@@ -1,1 +1,83 @@
-'use client';import {useEffect,useState} from 'react';import {getVehicles,getLeads,resetDemo} from '@/lib/store';import {Vehicle,Lead} from '@/lib/types';export default function Dashboard(){const[v,setV]=useState<Vehicle[]>([]);const[l,setL]=useState<Lead[]>([]);useEffect(()=>{setV(getVehicles());setL(getLeads())},[]);return <><div className="label">Demo administration</div><h1>Inventory dashboard</h1><p>This demo stores changes in this browser. Production schema and RLS are included for Supabase migration after validation.</p><div className="grid-cards">{['Available','Reserved','Sold','Draft'].map(s=><div className="metric" key={s}><span className="label">{s}</span><strong>{v.filter(x=>x.status===s).length}</strong></div>)}<div className="metric"><span className="label">Leads</span><strong>{l.length}</strong></div></div><button className="btn secondary" style={{marginTop:24}} onClick={resetDemo}>Reset demo data</button></>}
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+export default function LoginPage() {
+  const router = useRouter();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const form = new FormData(e.currentTarget);
+
+    const email = String(form.get('email') || '');
+    const password = String(form.get('password') || '');
+
+    if (
+      email === 'demo@darmotors.local' &&
+      password === 'demo1234'
+    ) {
+      sessionStorage.setItem('dar_demo_auth', '1');
+      router.replace('/admin');
+      return;
+    }
+
+    alert('Incorrect demo credentials.');
+  }
+
+  return (
+    <main
+      className="shell section"
+      style={{ maxWidth: 520 }}
+    >
+      <div className="label">D.A.R. Motors</div>
+
+      <h1>Admin login</h1>
+
+      <p>
+        Demo credentials:
+        <br />
+        <b>demo@darmotors.local</b>
+        <br />
+        <b>demo1234</b>
+      </p>
+
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: 'grid',
+          gap: 12,
+        }}
+      >
+        <input
+          className="input"
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
+        />
+
+        <input
+          className="input"
+          name="password"
+          type="password"
+          placeholder="Password"
+          required
+        />
+
+        <button className="btn" type="submit">
+          Log in
+        </button>
+      </form>
+
+      <p
+        style={{
+          color: '#6b7280',
+          fontSize: 13,
+        }}
+      >
+        Demo authentication is browser-session only.
+      </p>
+    </main>
+  );
+}
