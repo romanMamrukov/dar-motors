@@ -1,15 +1,15 @@
 {
-  "name": "dar-motors",
-  "version": "0.1.0",
+  "name": "dar-motors-mvp",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
-        "dev": "next dev",
+    "dev": "next dev",
     "build": "next build",
-    "build:pages": "next build",
-    "deploy:pages": "npm run build:pages && gh-pages -d out",
+    "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "deploy:pages": "npm run build && gh-pages -d out --dotfiles"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

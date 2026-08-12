@@ -1,77 +1,20 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { getVehicles, getLeads, saveLeads } from '@/lib/store';
 import { Vehicle } from '@/lib/types';
 import { eur, km } from '@/lib/format';
 import { publicAsset } from '@/lib/paths';
 import Header from './Header';
+import { useI18n } from './LanguageProvider';
 
 export default function VehicleDetail() {
-  const [v, setV] = useState<Vehicle>();
-  const [loaded, setLoaded] = useState(false);
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    const slug = new URLSearchParams(window.location.search).get('slug');
-    setV(getVehicles().find((x) => x.slug === slug));
-    setLoaded(true);
-  }, []);
-
+  const { t, locale } = useI18n();
+  const [v, setV] = useState<Vehicle>(); const [loaded, setLoaded] = useState(false); const [done, setDone] = useState(false);
+  useEffect(() => { const slug = new URLSearchParams(window.location.search).get('slug'); setV(getVehicles().find((x) => x.slug === slug)); setLoaded(true); }, []);
   if (!loaded) return null;
-  if (!v) return <><Header /><div className="shell section">Vehicle not found.</div></>;
-
-  function submit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    const ls = getLeads();
-    saveLeads([{
-      id: crypto.randomUUID(),
-      vehicleId: v!.id,
-      customer: String(f.get('name')),
-      phone: String(f.get('phone')),
-      email: String(f.get('email')),
-      message: String(f.get('message')),
-      createdAt: new Date().toISOString().slice(0, 10),
-      status: 'New',
-    }, ...ls]);
-    setDone(true);
-  }
-
-  return <>
-    <Header />
-    <main className="shell section">
-      <img src={publicAsset(v.images[v.coverIndex] || '/cars/car1.svg')} alt={`${v.manufacturer} ${v.model}`} style={{ width: '100%', maxHeight: 600, objectFit: 'cover', background: '#eee' }} />
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,2fr) minmax(280px,1fr)', gap: 40, marginTop: 30 }}>
-        <div>
-          <span className={`status ${v.status}`}>{v.status}</span>
-          <h1 style={{ fontSize: 46, margin: '10px 0' }}>{v.manufacturer} {v.model}</h1>
-          <p style={{ fontSize: 28, fontWeight: 800 }}>{eur(v.price)}</p>
-          <div className="grid-cards">
-            {[
-              ['Year', v.year], ['Mileage', km(v.mileage)], ['Engine', v.engine], ['Fuel', v.fuel],
-              ['Transmission', v.transmission], ['Power', v.power + ' kW'], ['Body', v.bodyType], ['Color', v.color],
-            ].map(([a, b]) => <div key={a as string} style={{ borderTop: '1px solid #ddd', paddingTop: 10 }}><div className="label">{a}</div><b>{b}</b></div>)}
-          </div>
-          <h2>Description</h2><p style={{ lineHeight: 1.7 }}>{v.description}</p>
-          <h2>Equipment</h2><p>{v.features.join(' · ')}</p>
-          <h2>Preparation</h2><p>{v.preparation}</p>
-        </div>
-        <aside id="enquiry">
-          <div style={{ border: '1px solid #ddd', padding: 20, position: 'sticky', top: 20 }}>
-            <h2>Ask about this car</h2>
-            {done ? <p><b>Enquiry received.</b> It is now visible in the admin demo.</p> :
-              <form onSubmit={submit} style={{ display: 'grid', gap: 10 }}>
-                <input required className="input" name="name" placeholder="Name" />
-                <input required className="input" name="phone" placeholder="Phone" />
-                <input className="input" type="email" name="email" placeholder="Email (optional)" />
-                <textarea required className="textarea" name="message" defaultValue={`I am interested in the ${v.manufacturer} ${v.model}.`} />
-                <button className="btn">Send enquiry</button>
-              </form>}
-          </div>
-        </aside>
-      </div>
-    </main>
-    <div className="mobile-cta"><a className="btn secondary" href="tel:+37100000000">Call</a><a className="btn" href="#enquiry">Enquire</a></div>
-  </>;
+  if (!v) return <><Header /><div className="shell section">{t.notFound}</div></>;
+  function submit(e: React.FormEvent<HTMLFormElement>) { e.preventDefault(); const f = new FormData(e.currentTarget); const ls = getLeads(); saveLeads([{ id: crypto.randomUUID(), vehicleId: v!.id, customer: String(f.get('name')), phone: String(f.get('phone')), email: String(f.get('email')), message: String(f.get('message')), createdAt: new Date().toISOString().slice(0, 10), status: 'New' }, ...ls]); setDone(true); }
+  const statusLabel = v.status === 'Available' ? t.available : v.status === 'Reserved' ? t.reserved : v.status === 'Sold' ? t.sold : t.draft;
+  const interestText = locale === 'lv' ? `Mani interesē ${v.manufacturer} ${v.model}.` : locale === 'ru' ? `Меня интересует ${v.manufacturer} ${v.model}.` : `I am interested in the ${v.manufacturer} ${v.model}.`;
+  return <><Header/><main className="shell section vehicle-page"><div className="vehicle-hero"><img src={publicAsset(v.images[v.coverIndex]||'/cars/car1.svg')} alt={`${v.manufacturer} ${v.model}`}/><span className={`status ${v.status}`}>{statusLabel}</span></div><div className="vehicle-layout"><div><div className="vehicle-heading"><div><h1>{v.manufacturer} {v.model}</h1><p>{v.generation}</p></div><strong>{eur(v.price)}</strong></div><div className="spec-grid">{[[t.year,v.year],[t.mileage,km(v.mileage)],[t.engine,v.engine],[t.fuel,v.fuel],[t.transmission,v.transmission],[t.power,v.power+' kW'],[t.body,v.bodyType],[t.color,v.color]].map(([a,b])=><div key={String(a)}><div className="label">{a}</div><b>{b}</b></div>)}</div><section className="vehicle-copy"><h2>{t.description}</h2><p>{v.description}</p><h2>{t.equipment}</h2><p>{v.features.join(' · ')}</p><h2>{t.preparation}</h2><p>{v.preparation}</p></section></div><aside id="enquiry"><div className="enquiry-card"><div className="label">D.A.R. Motors</div><h2>{t.askCar}</h2>{done?<p><b>{t.enquiryReceived}</b> {t.enquiryAdmin}</p>:<form onSubmit={submit}><input required className="input" name="name" placeholder={t.name}/><input required className="input" name="phone" placeholder={t.phone}/><input className="input" type="email" name="email" placeholder={t.emailOptional}/><textarea required className="textarea" name="message" defaultValue={interestText}/><button className="btn brand-btn">{t.sendEnquiry}</button></form>}</div></aside></div></main><div className="mobile-cta"><a className="btn secondary" href="tel:+37123777728">{t.call}</a><a className="btn brand-btn" href="#enquiry">{t.enquire}</a></div></>;
 }

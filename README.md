@@ -73,3 +73,16 @@ npm run dev
 npm run build:pages
 npm run deploy:pages
 ```
+
+## v0.3 D.A.R. Motors branded edition
+
+This edition adds:
+- LV / RU / EN public UI with browser-persisted language selection;
+- visual identity based on the supplied D.A.R. Motors workshop signage;
+- real address and business identity data;
+- Facebook and map/directions links;
+- GitHub Pages-safe production base path `/dar-motors`;
+- `.nojekyll` retained through `public/.nojekyll`;
+- hardened demo admin redirect logic for trailing-slash/static hosting.
+
+See `BUSINESS_DATA.md` for verified data and fields that still require client confirmation.
