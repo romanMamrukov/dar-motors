@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+        "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "build:pages": "next build",
+    "deploy:pages": "npm run build:pages && gh-pages -d out",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "build:pages": "node scripts/build-pages.mjs dar-motors",
-    "deploy:pages": "npm run build:pages && gh-pages -d out --dotfiles"
+    "test": "vitest run"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
