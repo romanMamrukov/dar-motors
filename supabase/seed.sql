@@ -1,0 +1,2 @@
+-- Seed production-like records after creating an admin auth user. Demo UI uses src/lib/seed.ts by default.
+-- Keep customer data out of source control.

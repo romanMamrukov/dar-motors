@@ -1,0 +1,3 @@
+export type VehicleStatus='Available'|'Reserved'|'Sold'|'Draft';
+export type Vehicle={id:string;slug:string;manufacturer:string;model:string;generation?:string;year:number;price:number;mileage:number;fuel:string;transmission:string;engine:string;power:number;bodyType:string;color:string;vin?:string;inspection?:string;description:string;features:string[];preparation:string;status:VehicleStatus;published:boolean;images:string[];coverIndex:number;createdAt:string};
+export type Lead={id:string;vehicleId:string;customer:string;phone:string;email?:string;message:string;createdAt:string;status:'New'|'Contacted'|'Closed'};

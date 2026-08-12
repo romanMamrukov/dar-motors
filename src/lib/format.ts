@@ -1,0 +1,1 @@
+export const eur=(n:number)=>new Intl.NumberFormat('lv-LV',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n); export const km=(n:number)=>new Intl.NumberFormat('lv-LV').format(n)+' km';

@@ -1,0 +1,2 @@
+'use client';import {useEffect,useState} from 'react';import {getVehicles} from '@/lib/store';import {Vehicle} from '@/lib/types';import CarCard from './CarCard';
+export default function PublicCars({limit}:{limit?:number}){const [cars,setCars]=useState<Vehicle[]>([]);useEffect(()=>setCars(getVehicles().filter(v=>v.published&&v.status!=='Draft')),[]);return <div className="grid-cards">{cars.slice(0,limit||cars.length).map(v=><CarCard key={v.id} v={v}/>)}</div>}
