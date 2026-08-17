@@ -1,30 +1,45 @@
-# D.A.R. Motors — Vehicle Inventory & Sales MVP
+# D.A.R. Motors — Motorbase Client Configuration
 
-A validation-first vehicle inventory system with a public storefront and a staff-oriented admin workflow. The default build runs in **demo mode** with browser-local data so it can be shown to the customer before a backend account is configured.
+A branded customer-validation build of Motorbase for vehicle sales and inventory management.
 
-## What is implemented
-- Public home, inventory, vehicle detail and enquiry flow.
-- Filters for manufacturer, fuel and status (schema supports expansion to price/year/transmission).
-- Admin dashboard, vehicle list, create/edit/delete, Draft/Available/Reserved/Sold workflow.
-- Multi-image browser upload preview/removal in demo mode (cover defaults to first image).
-- Lead inbox with New/Contacted/Closed states.
-- Five realistic Latvia-oriented demo vehicles.
-- Centralized starter copy module for later LV/RU/EN i18n.
-- Supabase PostgreSQL schema, RLS policies and Storage bucket migration.
-- Zod validation primitives and Vitest validation tests.
+[Open the live demo](https://romanmamrukov.github.io/dar-motors/) · [View the reusable Motorbase core](https://github.com/romanMamrukov/auto-repair-shop) · [Review the customer test plan](./CUSTOMER_TEST_PLAN.md)
 
-## Important MVP boundary
-The customer-validation build intentionally uses localStorage for write operations. This removes backend setup from the first 10-minute test and lets the employee add/edit cars immediately. **Do not use demo mode for real customer data.** The included Supabase migration is the production foundation; wiring the repository layer to Supabase Auth/DB/Storage is the first post-validation implementation step.
+## Purpose
 
-## Local run
+This repository tests one concrete workflow: staff should be able to publish vehicles with images and descriptions, update availability, and receive enquiries without asking a developer to edit the website.
+
+It is a **proposal and validation demo**, not evidence of a completed client deployment. Branding and business information are included to make customer testing realistic; unverified fields are documented in [`BUSINESS_DATA.md`](./BUSINESS_DATA.md).
+
+## What can be tested
+
+- LV / RU / EN public experience
+- vehicle catalogue and static detail routes
+- manufacturer, fuel, and availability filters
+- staff-oriented admin dashboard
+- create, edit, delete, and multi-image preview flows
+- Draft, Available, Reserved, and Sold inventory states
+- New, Contacted, and Closed lead states
+- browser-persisted demo data
+- GitHub Pages-compatible static export
+
+## Demo boundary
+
+All admin writes are stored in the current browser through `localStorage`. They are not shared with another device and can be lost when browser data is cleared.
+
+Do not enter real customer, employee, enquiry, or inventory data. The demo login is not production authentication.
+
+## Run locally
+
 ```bash
 cp .env.example .env.local
 npm install
 npm run dev
 ```
-Open http://localhost:3000 and http://localhost:3000/admin. Demo login: `demo@darmotors.local` / `demo1234`.
 
-## Quality checks
+Open the application and `/admin` using the demo-only credentials documented in the interface.
+
+## Validate
+
 ```bash
 npm run typecheck
 npm run lint
@@ -32,57 +47,38 @@ npm test
 npm run build
 ```
 
-## Supabase production setup
-1. Create a Supabase project.
-2. Run `supabase/migrations/001_initial.sql` in SQL Editor or through Supabase CLI migrations.
-3. Create the first admin user in Auth.
-4. Insert that user's UUID into `public.profiles` with role `admin`.
-5. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` locally/Vercel. Never expose the service-role key.
-6. Replace the demo repository in `src/lib/store.ts` with a Supabase repository. Public reads use anon + RLS; admin writes require authenticated session. Upload images to `vehicle-images` and store only storage paths in `vehicle_images`.
-7. Add server-side validation/rate limiting for public leads before accepting production traffic.
+Manual customer testing should also cover:
 
-## Deployment
-### Vercel demo
-Import the GitHub repository into Vercel, set `NEXT_PUBLIC_DEMO_MODE=true`, deploy. Browser-local changes are per-device and are not shared.
+- adding inventory from an iPhone and Android photo library;
+- editing and selling a vehicle from a mobile browser;
+- Latvian, Russian, and English wording;
+- enquiry handling from submission to closure;
+- the information staff need but the current form does not capture.
 
-### Production
-Set `NEXT_PUBLIC_DEMO_MODE=false`, configure Supabase environment variables, complete the Supabase repository/auth integration, then deploy. Use a custom domain only after the customer confirms branding/contact/legal content.
+## Production path
 
-## Manual checks still required
-- iPhone/Android image selection from camera roll.
-- Real photographs and image compression quality.
-- Customer's actual phone/address/service copy.
-- Latvian/Russian/English wording.
-- Supabase auth/session and storage integration before production.
-- Privacy notice/consent requirements for enquiry data.
+The repository includes a Supabase schema, RLS policies, and a Storage bucket migration. A production release still requires:
 
-See `CUSTOMER_TEST_PLAN.md`, `CUSTOMER_FEEDBACK.md`, and `PRODUCTION_CHECKLIST.md`.
+1. real Supabase Auth and session handling;
+2. database-backed vehicles, images, and leads;
+3. server-side validation and rate limiting;
+4. image compression, file validation, and upload failure recovery;
+5. confirmed company, contact, legal, and privacy content;
+6. monitoring, backups, and a tested recovery procedure;
+7. removal of every demo credential and `localStorage` write path.
 
+## Repository guide
 
-## GitHub Pages demo edition
+- [`CUSTOMER_TEST_PLAN.md`](./CUSTOMER_TEST_PLAN.md) — structured validation session
+- [`CUSTOMER_FEEDBACK.md`](./CUSTOMER_FEEDBACK.md) — feedback capture
+- [`PRODUCTION_CHECKLIST.md`](./PRODUCTION_CHECKLIST.md) — go-live gates
+- [`GITHUB_PAGES.md`](./GITHUB_PAGES.md) — static demo deployment
+- [`BUSINESS_DATA.md`](./BUSINESS_DATA.md) — verified and pending business details
 
-This repository has been adapted for GitHub Pages static hosting. Dynamic vehicle routes were replaced with query-based static routes so vehicles created in browser-local demo mode can still be opened without rebuilding the site.
+## Security
 
-For the exact deployment procedure, see [`GITHUB_PAGES.md`](./GITHUB_PAGES.md).
+This repository is not approved for production data. See [`SECURITY.md`](./SECURITY.md) before reporting a vulnerability or sharing sensitive details.
 
-Quick commands:
+## Licence
 
-```bash
-npm install
-npm run dev
-npm run build:pages
-npm run deploy:pages
-```
-
-## v0.3 D.A.R. Motors branded edition
-
-This edition adds:
-- LV / RU / EN public UI with browser-persisted language selection;
-- visual identity based on the supplied D.A.R. Motors workshop signage;
-- real address and business identity data;
-- Facebook and map/directions links;
-- GitHub Pages-safe production base path `/dar-motors`;
-- `.nojekyll` retained through `public/.nojekyll`;
-- hardened demo admin redirect logic for trailing-slash/static hosting.
-
-See `BUSINESS_DATA.md` for verified data and fields that still require client confirmation.
+No open-source licence is currently declared. The source is available for evaluation only unless explicit permission is granted.
